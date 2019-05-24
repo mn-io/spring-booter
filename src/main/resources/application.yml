@@ -1,0 +1,27 @@
+# https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
+# https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: @db.url@
+    username: @db.user@
+    password: @db.pwd@
+  main:
+    banner-mode: 'off'
+  profiles:
+    active: @environment-name@
+
+application:
+  accessControlAllowOrigin: '*'
+  network:
+    readTimeoutInSeconds: 60
+    connectionTimeoutInSeconds: 60
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'mappings'
