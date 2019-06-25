@@ -7,6 +7,11 @@
 - liquibase diff (see makefile) fails with NPE.
 - list all endpoints and filters
 
+- Get started
+  - create db, e.g. vagrant
+  - run liquibase by makefile
+  - hint: local tests and local run db requirements
+
 ## INFO
 actuator, see actuator/mappings
 

@@ -1,8 +1,5 @@
 # NB; install maven first
 
-
-
-
 # Create diff.sql from java code
 # steps:
 #  1.) Create hibernate entities and run command below
@@ -18,6 +15,10 @@ db-update:
 
 mvn-tree:
 	mvn dependency:tree -Dverbose
+
+mvn-run:
+	mvn spring-boot:run
+
 
 # NB: install curl and jq
 

@@ -1,5 +1,6 @@
 package net.mnio.springbooter.services.user;
 
+import net.mnio.jOrchestra.InterruptService;
 import net.mnio.springbooter.controller.api.UserSignupDto;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
@@ -13,6 +14,9 @@ public class UserVerificationService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private InterruptService interruptService;
 
     public User createUser(final UserSignupDto userSignupDto) {
         if (StringUtils.isEmpty(userSignupDto.getEmail())) {
@@ -30,6 +34,8 @@ public class UserVerificationService {
         final User user = new User();
         user.setName(userSignupDto.getName());
         user.setEmail(userSignupDto.getEmail());
+
+        interruptService.interrupt();
 
         final String encode = PasswordUtil.hashPasswordWithSalt(userSignupDto.getPassword());
         user.setPassword(encode);

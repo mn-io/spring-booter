@@ -1,5 +1,6 @@
 package net.mnio.springbooter;
 
+import net.mnio.jOrchestra.InterruptService;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
 import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
 import org.junit.runner.RunWith;
@@ -42,6 +43,12 @@ public abstract class AbstractTest {
         @Bean
         UserRepository userRepository() {
             return mock(UserRepository.class);
+        }
+
+        @Bean
+        InterruptService interruptService() {
+            return new InterruptService() {
+            };
         }
     }
 
