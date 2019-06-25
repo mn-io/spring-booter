@@ -1,6 +1,6 @@
 package net.mnio.springbooter.controller.api;
 
-public class UserSignupDto {
+public class UserCreateOrUpdateDto {
 
     private String email;
 

@@ -2,13 +2,10 @@ package net.mnio.springbooter.controller;
 
 import net.mnio.springbooter.bootstrap.session.PermitPublic;
 import net.mnio.springbooter.bootstrap.session.UserSessionContext;
+import net.mnio.springbooter.controller.api.UserCreateOrUpdateDto;
 import net.mnio.springbooter.controller.api.UserDto;
-import net.mnio.springbooter.controller.api.UserSignupDto;
-import net.mnio.springbooter.controller.api.UserUpdateDto;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.services.user.UserService;
-import net.mnio.springbooter.services.user.UserSessionService;
-import net.mnio.springbooter.services.user.UserVerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,30 +22,24 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserSessionService userSessionService;
-
-    @Autowired
-    private UserVerificationService userVerificationService;
-
     @PermitPublic
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<UserDto> signup(@RequestBody final UserSignupDto userSignupDto) {
-        final User user = userVerificationService.createUser(userSignupDto);
+    public ResponseEntity<UserDto> signup(@RequestBody final UserCreateOrUpdateDto dto) {
+        final User user = userService.createUser(dto);
         return ResponseEntity.ok(UserDto.build(user));
     }
 
     @PermitPublic
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Page<UserDto>> listAll(final Pageable pageable) {
-        final Page<User> page = userService.getAll(pageable);
+        final Page<User> page = userService.findAll(pageable);
         return ResponseEntity.ok(page.map(UserDto::build));
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.PUT)
-    public ResponseEntity<UserDto> updateMe(@RequestBody final UserUpdateDto userUpdateDto) {
+    public ResponseEntity<UserDto> updateMe(@RequestBody final UserCreateOrUpdateDto dto) {
         final User user = UserSessionContext.getSession().getUser();
-        final User updated = userService.updateUser(user, userUpdateDto);
+        final User updated = userService.updateUser(user, dto);
         return ResponseEntity.ok(UserDto.build(updated));
     }
 
@@ -61,6 +52,6 @@ public class UserController {
     @RequestMapping(value = "/me", method = RequestMethod.DELETE)
     public void deleteMe() {
         final User user = UserSessionContext.getSession().getUser();
-        userVerificationService.deleteUser(user);
+        userService.delete(user);
     }
 }

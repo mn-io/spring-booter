@@ -1,11 +1,14 @@
 package net.mnio.springbooter.services.user;
 
-import net.mnio.springbooter.controller.api.UserUpdateDto;
+import net.mnio.jOrchestra.InterruptService;
+import net.mnio.springbooter.controller.api.UserCreateOrUpdateDto;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.model.UserSession;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
 import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
 import net.mnio.springbooter.util.log.Log;
+import net.mnio.springbooter.util.security.PasswordUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,61 +26,64 @@ public class UserService {
     private Logger log;
 
     @Autowired
-    private UserVerificationService userVerificationService;
+    private UserRepository userRepository;
 
     @Autowired
     private UserSessionRepository userSessionRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private InterruptService interruptService;
 
-    public Optional<User> getUser(final String email) {
-        return userRepository.findByEmail(email.toLowerCase());
-    }
-
-//    @Transactional
-//    public User createOrUpdateUser(final UserDto userDto) {
-//        final User user;
-//        final String newPassword;
-//        if (StringUtils.isEmpty(userDto.getId())) {
-//            newPassword = RandomUtil.generateRandomPassword();
-//            user = userVerificationService.createUser(userDto.getEmail(), newPassword);
-//        } else {
-//            user = userRepository.findById(userDto.getId()).get();
-//            // TODO: proper catch
-//            if (user == null) {
-//                throw new IllegalStateException("user by id and accountId not found");
-//            }
-//            user.setEmail(userDto.getEmail());
-//        }
-//
-//        final User saved = userRepository.save(user);
-//        return saved;
-//    }
-
-    //TODO: test
-    @Transactional
-    public void delete(final String userId) {
-        final Optional<User> user = userRepository.findById(userId);
-
-        if (!user.isPresent()) {
-            return;
-        }
-
-        final List<UserSession> sessions = userSessionRepository.findAllByUserId(user.get().getId());
-        userSessionRepository.deleteAll(sessions);
-
-        userRepository.delete(user.get());
-    }
-
-    public Page<User> getAll(final Pageable pageable) {
+    public Page<User> findAll(final Pageable pageable) {
         return userRepository.findAll(pageable);
     }
 
-    public User updateUser(final User user, final UserUpdateDto userUpdateDto) {
-        user.setEmail(userUpdateDto.getEmail());
-        user.setName(userUpdateDto.getName());
+    public Optional<User> findByEmail(final String email) {
+        return userRepository.findByEmail(email.toLowerCase());
+    }
 
+    public User createUser(final UserCreateOrUpdateDto dto) {
+        final User user = new User();
+        updateUser(user, dto);
         return userRepository.save(user);
+    }
+
+    public boolean checkPassword(final User user, final String plaintextPassword) {
+        return PasswordUtil.checkPassword(plaintextPassword, user.getPassword());
+    }
+
+    @Transactional
+    public User updateUser(final User user, final UserCreateOrUpdateDto dto) {
+        user.setEmail(dto.getEmail());
+        user.setName(dto.getName());
+        final String encode = PasswordUtil.hashPasswordWithSalt(dto.getPassword());
+        user.setPassword(encode);
+
+        check(user);
+
+        interruptService.interrupt();
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void delete(final User user) {
+        final List<UserSession> sessions = userSessionRepository.findAllByUserId(user.getId());
+        userSessionRepository.deleteAll(sessions);
+
+        userRepository.delete(user);
+    }
+
+    private void check(final User user) {
+        if (StringUtils.isEmpty(user.getEmail())) {
+            throw new IllegalArgumentException("e-mail must not be empty");
+        }
+
+        if (StringUtils.isEmpty(user.getName())) {
+            throw new IllegalArgumentException("name must not be empty");
+        }
+
+//        if (StringUtils.isEmpty(user.getPassword())) {
+//            throw new IllegalArgumentException("password must not be empty");
+//        }
     }
 }

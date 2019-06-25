@@ -10,7 +10,6 @@ import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.model.UserSession;
 import net.mnio.springbooter.services.user.UserService;
 import net.mnio.springbooter.services.user.UserSessionService;
-import net.mnio.springbooter.services.user.UserVerificationService;
 import net.mnio.springbooter.util.log.Log;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,22 +34,26 @@ public class SessionController {
     @Autowired
     private UserSessionService userSessionService;
 
-    @Autowired
-    private UserVerificationService userVerificationService;
-
+    /**
+     * User verification is not part of any service as HttpExceptions are thrown
+     * which should be managed by controller logic.
+     *
+     * @param dto
+     * @return
+     */
     @PermitPublic
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<UserDto> login(@RequestBody final UserLoginDto userLoginDto) {
-        final String email = userLoginDto.getEmail();
-        final Optional<User> user = userService.getUser(email);
+    public ResponseEntity<UserDto> login(@RequestBody final UserLoginDto dto) {
+        final String email = dto.getEmail();
+        final Optional<User> user = userService.findByEmail(email);
         if (user.isEmpty()) {
             log.debug("User {} not found", email);
             throw new UserForbiddenHttpException();
         }
 
-        final String password = userLoginDto.getPassword();
+        final String password = dto.getPassword();
         final User userFound = user.get();
-        final boolean pwdOk = userVerificationService.checkPassword(userFound, password);
+        final boolean pwdOk = userService.checkPassword(userFound, password);
         if (!pwdOk) {
             log.debug("User {} with wrong password", email);
             throw new UserForbiddenHttpException();
@@ -58,7 +61,6 @@ public class SessionController {
 
         final UserSession session = userSessionService.createSession(userFound);
 
-        log.debug("Session created for user {}", email);
         return ResponseEntity.ok()
                 .header(AuthFilter.HEADER_NAME_SESSION_TOKEN, session.getToken())
                 .body(UserDto.build(userFound));
@@ -67,10 +69,6 @@ public class SessionController {
     @RequestMapping(method = RequestMethod.DELETE)
     public void logout() {
         final UserSession session = UserSessionContext.getSession();
-        final String sessionId = session.getId();
-        final String email = session.getUser().getEmail();
-
-        userSessionService.destroySession(sessionId);
-        log.debug("Session destroyed for user {}", email);
+        userSessionService.destroySession(session);
     }
 }
