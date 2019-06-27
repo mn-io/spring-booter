@@ -8,10 +8,7 @@ import net.mnio.springbooter.persistence.model.UserSession;
 import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ContextConfiguration
 public class AuthFilterUnitTest extends AbstractUnitTest {
 
     private static final String REQUEST_MAPPING_ROOT = "/authFilterTest";
@@ -35,15 +31,7 @@ public class AuthFilterUnitTest extends AbstractUnitTest {
     private final String REQUEST_PARAM = "?echo=" + REQUEST_PARAM_VALUE;
 
     @Autowired
-    UserSessionRepository userSessionRepository;
-
-    @Configuration
-    static class Config {
-        @Bean
-        UserSessionRepository userSessionRepository() {
-            return mock(UserSessionRepository.class);
-        }
-    }
+    private UserSessionRepository userSessionRepository;
 
     @Test
     public void isPublic() throws Exception {

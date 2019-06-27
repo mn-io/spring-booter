@@ -6,10 +6,8 @@ import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.model.UserSession;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
 import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
-import net.mnio.springbooter.util.log.Log;
 import net.mnio.springbooter.util.security.PasswordUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +19,6 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-
-    @Log
-    private Logger log;
 
     @Autowired
     private UserRepository userRepository;
@@ -44,8 +39,7 @@ public class UserService {
 
     public User createUser(final UserCreateOrUpdateDto dto) {
         final User user = new User();
-        updateUser(user, dto);
-        return userRepository.save(user);
+        return updateUser(user, dto);
     }
 
     public boolean checkPassword(final User user, final String plaintextPassword) {
@@ -54,12 +48,19 @@ public class UserService {
 
     @Transactional
     public User updateUser(final User user, final UserCreateOrUpdateDto dto) {
-        user.setEmail(dto.getEmail());
-        user.setName(dto.getName());
+        user.setEmail(StringUtils.stripToEmpty(dto.getEmail()).toLowerCase());
+        user.setName(StringUtils.stripToEmpty(dto.getName()));
+
+        if (StringUtils.isEmpty(user.getEmail())) {
+            throw new IllegalArgumentException("e-mail must not be empty");
+        }
+
+        if (StringUtils.isEmpty(dto.getPassword())) {
+            throw new IllegalArgumentException("password must not be empty");
+        }
+
         final String encode = PasswordUtil.hashPasswordWithSalt(dto.getPassword());
         user.setPassword(encode);
-
-        check(user);
 
         interruptService.interrupt();
         return userRepository.save(user);
@@ -71,19 +72,5 @@ public class UserService {
         userSessionRepository.deleteAll(sessions);
 
         userRepository.delete(user);
-    }
-
-    private void check(final User user) {
-        if (StringUtils.isEmpty(user.getEmail())) {
-            throw new IllegalArgumentException("e-mail must not be empty");
-        }
-
-        if (StringUtils.isEmpty(user.getName())) {
-            throw new IllegalArgumentException("name must not be empty");
-        }
-
-//        if (StringUtils.isEmpty(user.getPassword())) {
-//            throw new IllegalArgumentException("password must not be empty");
-//        }
     }
 }

@@ -61,6 +61,11 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
         assertEquals(sessionCountBefore, sessionCountAfter);
     }
 
+//    @Test
+//    public void createNewUserForLoginWithUpdateAndLogoutHappyPath() throws Exception {
+//        _
+//    }
+
     private void doAndVerifySignUp(final UserCreateOrUpdateDto createDto) throws Exception {
         final String createPostBody = mapper.writeValueAsString(createDto);
         final MockHttpServletRequestBuilder signUpRequest = post(URL_ROOT_USERS)
@@ -92,7 +97,8 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
         return sessionToken;
     }
 
-    private void doAndVerifyGetUser(final String sessionToken, final UserCreateOrUpdateDto createDto) throws Exception {
+    private void doAndVerifyGetUser(final String sessionToken, final UserCreateOrUpdateDto createDto) throws
+            Exception {
         final MockHttpServletRequestBuilder meRequest = get(URL_ROOT_USERS + "/me")
                 .header(AuthFilter.HEADER_NAME_SESSION_TOKEN, sessionToken);
         mvc.perform(meRequest)
@@ -102,7 +108,8 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.email").value(createDto.getEmail()));
     }
 
-    private void doAndVerifyPutUser(final String sessionToken, final UserCreateOrUpdateDto updateDto) throws Exception {
+    private void doAndVerifyPutUser(final String sessionToken, final UserCreateOrUpdateDto updateDto) throws
+            Exception {
         final String updatePutBody = mapper.writeValueAsString(updateDto);
 
         final MockHttpServletRequestBuilder meUpdateRequest = put(URL_ROOT_USERS + "/me")
