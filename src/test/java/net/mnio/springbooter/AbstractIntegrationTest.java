@@ -1,5 +1,6 @@
 package net.mnio.springbooter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.mnio.springbooter.bootstrap.EnvironmentProvider;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     private EnvironmentProvider environmentProvider;
 
-//    protected final ObjectMapper mapper = new ObjectMapper();
+    protected final ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setUp() {

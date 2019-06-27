@@ -24,7 +24,7 @@ public class UserController {
 
     @PermitPublic
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<UserDto> signup(@RequestBody final UserCreateOrUpdateDto dto) {
+    public ResponseEntity<UserDto> signUp(@RequestBody final UserCreateOrUpdateDto dto) {
         final User user = userService.createUser(dto);
         return ResponseEntity.ok(UserDto.build(user));
     }

@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Map;
+
 @Component
 public class ErrorHandlerComponent {
 
@@ -23,7 +26,8 @@ public class ErrorHandlerComponent {
     }
 
     ResponseEntity<Object> handleException(final Throwable t, final HttpStatus status, final LogLevel logLevel) {
-        final ExceptionDto dto = new ExceptionDto(t.getClass().getSimpleName(), status);
+        final Map<String, Object> data = Collections.singletonMap("message", t.getMessage());
+        final ExceptionDto dto = new ExceptionDto(t.getClass().getSimpleName(), status, data);
         logException(dto, logLevel, t);
         return ResponseEntity.status(status).body(dto);
     }

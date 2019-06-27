@@ -1,5 +1,6 @@
 package net.mnio.springbooter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.mnio.jOrchestra.InterruptService;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
 import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.mock;
 @ContextConfiguration
 // extra component scan needed because of context configuration
 @ComponentScan(basePackages = {"net.mnio.springbooter"})
-public abstract class AbstractTest {
+public abstract class AbstractUnitTest {
 
     @Configuration
     @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
@@ -54,4 +55,6 @@ public abstract class AbstractTest {
 
     @Autowired
     protected MockMvc mvc;
+
+    protected final ObjectMapper mapper = new ObjectMapper();
 }

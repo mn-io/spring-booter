@@ -6,20 +6,17 @@ public class UserLoginDto {
 
     private String password;
 
+    public UserLoginDto(final String email, final String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(final String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(final String password) {
-        this.password = password;
     }
 }
 

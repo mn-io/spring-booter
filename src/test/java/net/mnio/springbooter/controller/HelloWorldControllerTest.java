@@ -1,13 +1,13 @@
 package net.mnio.springbooter.controller;
 
-import net.mnio.springbooter.AbstractTest;
+import net.mnio.springbooter.AbstractUnitTest;
 import org.junit.Test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class HelloWorldControllerTest extends AbstractTest {
+public class HelloWorldControllerTest extends AbstractUnitTest {
 
     @Test
     public void getHelloWorld() throws Exception {

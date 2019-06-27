@@ -8,27 +8,21 @@ public class UserCreateOrUpdateDto {
 
     private String name;
 
-    public String getEmail() {
-        return email;
+    public UserCreateOrUpdateDto(final String email, final String name, final String password) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
     }
 
-    public void setEmail(final String email) {
-        this.email = email;
+    public String getEmail() {
+        return email;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 }
