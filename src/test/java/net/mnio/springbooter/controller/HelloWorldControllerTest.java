@@ -1,7 +1,9 @@
 package net.mnio.springbooter.controller;
 
 import net.mnio.springbooter.AbstractUnitTest;
+import net.mnio.springbooter.controller.error.exceptions.BadRequestMappingException;
 import org.junit.Test;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -22,7 +24,7 @@ public class HelloWorldControllerTest extends AbstractUnitTest {
         mvc.perform(get("/hello/exceptionUnknown"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.name").value("RuntimeException"));
+                .andExpect(jsonPath("$.name").value(RuntimeException.class.getSimpleName()));
     }
 
     @Test
@@ -30,7 +32,7 @@ public class HelloWorldControllerTest extends AbstractUnitTest {
         mvc.perform(get("/hello/exceptionMapped"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.name").value("BadRequestMappingException"));
+                .andExpect(jsonPath("$.name").value(BadRequestMappingException.class.getSimpleName()));
     }
 
     @Test
@@ -38,6 +40,7 @@ public class HelloWorldControllerTest extends AbstractUnitTest {
         mvc.perform(get("/hello/exceptionBySpring"))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.name").value("MissingServletRequestParameterException"));
+                .andExpect(jsonPath("$.name").value(MissingServletRequestParameterException.class.getSimpleName()
+                ));
     }
 }
