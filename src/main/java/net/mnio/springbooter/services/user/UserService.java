@@ -46,7 +46,6 @@ public class UserService {
         return PasswordUtil.checkPassword(plaintextPassword, user.getPassword());
     }
 
-    @Transactional
     public User updateUser(final User user, final UserCreateOrUpdateDto dto) {
         user.setEmail(StringUtils.stripToEmpty(dto.getEmail()).toLowerCase());
         user.setName(StringUtils.stripToEmpty(dto.getName()));
