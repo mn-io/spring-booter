@@ -166,7 +166,7 @@
         <!-- https://jitpack.io/#mn-io/jOrchestra/ -->
         <dependency>
             <groupId>com.github.mn-io</groupId>
-            <artifactId>jOrchestra</artifactId>
+            <artifactId>jConcurrencyOrchestra</artifactId>
             <version>master-SNAPSHOT</version>
         </dependency>
     </dependencies>

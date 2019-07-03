@@ -2,6 +2,7 @@ package net.mnio.springbooter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.mnio.springbooter.bootstrap.EnvironmentProvider;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public abstract class AbstractIntegrationTest {
     @Before
     public void setUp() {
         final String dbInfo = environmentProvider.getDatasourceUrl();
-        if (!dbInfo.endsWith("_test")) {
+        if (!StringUtils.endsWithIgnoreCase(dbInfo, "_test")) {
             throw new IllegalStateException("Tests must use db with suffix '_test'");
         }
     }
