@@ -32,3 +32,16 @@ And spring will violete the SPA, simple REST API, paradigm.
 
 Configuration is way to complex: https://docs.spring.io/spring-security/site/docs/current/reference/html/jc.html
 
+
+
+
+
+
+2019-07-03 14:47:29,329 [main] INFO : net.mnio.jOrchestra.test.TaskSchedule - Running order: Thread-4-Task-206386d6, Thread-5-Task-5a81222b, Thread-5-Task-5a81222b
+2019-07-03 14:47:29,739 [Thread-4-Task-206386d6] INFO : net.mnio.jOrchestra.test.OrchestratedInterruptServiceImpl - 1 - Interruption 'Before saving user 'user1'' called
+2019-07-03 14:47:29,820 [Thread-5-Task-5a81222b] INFO : net.mnio.jOrchestra.test.OrchestratedInterruptServiceImpl - 1 - Interruption 'Before saving user 'user2'' called
+2019-07-03 14:47:29,941 [Thread-5-Task-5a81222b] INFO : net.mnio.jOrchestra.test.OrchestratedInterruptServiceImpl - 1 - Continue from interruption 'Before saving user 'user2''
+2019-07-03 14:47:30,141 [Thread-4-Task-206386d6] INFO : net.mnio.jOrchestra.test.OrchestratedInterruptServiceImpl - 1 - Continue from interruption 'Before saving user 'user1''
+2019-07-03 14:47:30,146 [Thread-4-Task-206386d6] WARN : org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1062, SQLState: 23000
+2019-07-03 14:47:30,147 [Thread-4-Task-206386d6] ERROR: org.hibernate.engine.jdbc.spi.SqlExceptionHelper - (conn=838) Duplicate entry 'email' for key 'UC_USER_EMAIL_COL'
+2019-07-03 14:47:30,149 [Thread-4-Task-206386d6] ERROR: org.hibernate.internal.ExceptionMapperStandardImpl - HHH000346: Error during managed flush [org.hibernate.exception.Constra
