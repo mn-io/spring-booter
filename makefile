@@ -48,19 +48,3 @@ api-session-login:
 
 api-session-logout:
 	curl -s -i -H ${HEADER_SESSION} -X DELETE ${HOST}/session
-
-# use case: an exception is thrown which is not catched or foreseen by developers or business analysts
-api-test-unknown-exception-thrown:
-	curl -s ${HOST}/hello/exceptionUnknown | jq
-
-# use case: an eception is thrown which is known and part of the controll flow
-api-test-mapped-exception-thrown:
-	curl -s ${HOST}/hello/exceptionMapped | jq
-
-# use case: spring has some internal error handling which should be controlled by our handling
-api-test-spring-exception-thrown:
-	curl -s ${HOST}/hello/exceptionBySpring | jq
-
-# use-case: special case
-api-test-not-found:
-	curl -s ${HOST}/hello/notFound | jq

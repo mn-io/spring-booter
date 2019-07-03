@@ -24,6 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/*
+ * Testing permissions and session handling.
+ */
 public class AuthFilterUnitTest extends AbstractUnitTest {
 
     private static final String REQUEST_MAPPING_ROOT = "/authFilterTest";

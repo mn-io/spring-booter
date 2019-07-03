@@ -3,7 +3,6 @@ package net.mnio.springbooter.services.user;
 import net.mnio.jOrchestra.InterruptService;
 import net.mnio.springbooter.controller.api.UserCreateOrUpdateDto;
 import net.mnio.springbooter.persistence.model.User;
-import net.mnio.springbooter.persistence.model.UserSession;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
 import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
 import net.mnio.springbooter.util.security.PasswordUtil;
@@ -13,8 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -69,11 +66,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional
     public void delete(final User user) {
-        final List<UserSession> sessions = userSessionRepository.findAllByUserId(user.getId());
-        userSessionRepository.deleteAll(sessions);
-
+        if (user == null) {
+            return;
+        }
         userRepository.delete(user);
     }
 }

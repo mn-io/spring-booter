@@ -12,18 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
+/*
+ * Testing business use cases end to end.
+ */
+public class UserUseCaseIntegrationTest extends AbstractIntegrationTest {
 
     private final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
 
     private final String URL_ROOT_USERS = "/users";
+
+    private final String URL_ROOT_USER_ME = "/users/me";
 
     private final String URL_ROOT_SESSION = "/session";
 
@@ -43,28 +50,64 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
         doAndVerifySignUp(createDto);
 
         final UserLoginDto loginDto = new UserLoginDto(createDto.getEmail(), createDto.getPassword());
-        final String sessionToken = doAndVerifyLogin(loginDto);
+        final String sessionToken = doAndVerifyLoginSession(loginDto);
 
-        final long sessionCountInBetween = userSessionRepository.count();
-        assertEquals(sessionCountBefore + 1, sessionCountInBetween);
-
+        assertEquals(userCountBefore + 1, userRepository.count());
+        assertEquals(sessionCountBefore + 1, userSessionRepository.count());
 
         doAndVerifyGetUser(sessionToken, createDto);
         final UserCreateOrUpdateDto updateDto = new UserCreateOrUpdateDto("test2@test.com", "New Name", "new password");
-        doAndVerifyPutUser(sessionToken, updateDto);
+        doAndVerifyUpdateUser(sessionToken, updateDto);
         doAndVerifyGetUser(sessionToken, updateDto);
-        doAndVerifyLogout(sessionToken);
+        doAndVerifyLogoutSession(sessionToken);
 
-        final long userCountAfter = userRepository.count();
-        assertEquals(userCountBefore + 1, userCountAfter);
-        final long sessionCountAfter = userSessionRepository.count();
-        assertEquals(sessionCountBefore, sessionCountAfter);
+        assertEquals(userCountBefore + 1, userRepository.count());
+        assertEquals(sessionCountBefore, userSessionRepository.count());
     }
 
-//    @Test
-//    public void createNewUserForLoginWithUpdateAndLogoutHappyPath() throws Exception {
-//        _
-//    }
+    @Test
+    public void deleteUserWithOpenSessions() throws Exception {
+        final long userCountBefore = userRepository.count();
+        final long sessionCountBefore = userSessionRepository.count();
+
+        final UserCreateOrUpdateDto createDto = new UserCreateOrUpdateDto("test1@test.com", "TestiMcTestFace", "password");
+
+        doAndVerifySignUp(createDto);
+
+        final UserLoginDto loginDto = new UserLoginDto(createDto.getEmail(), createDto.getPassword());
+
+        final String sessionToken = doAndVerifyLoginSession(loginDto);
+        doAndVerifyLoginSession(loginDto);
+        doAndVerifyLoginSession(loginDto);
+
+        assertEquals(userCountBefore + 1, userRepository.count());
+
+        doAndVerifyDeleteUser(sessionToken);
+
+        assertEquals(userCountBefore, userRepository.count());
+        assertEquals(sessionCountBefore, userSessionRepository.count());
+    }
+
+    @Test
+    public void sessionsReturnWithDifferentIds() throws Exception {
+        final long sessionCountBefore = userSessionRepository.count();
+
+        final UserCreateOrUpdateDto createDto = new UserCreateOrUpdateDto("test1@test.com", "TestiMcTestFace", "password");
+
+        doAndVerifySignUp(createDto);
+
+        final UserLoginDto loginDto = new UserLoginDto(createDto.getEmail(), createDto.getPassword());
+
+        final int maxSessions = 5;
+        final Set<String> tokens = new HashSet<>(maxSessions);
+        for (int i = 0; i < maxSessions; i++) {
+            final String sessionToken = doAndVerifyLoginSession(loginDto);
+            assertFalse(tokens.contains(sessionToken));
+            tokens.add(sessionToken);
+        }
+
+        assertEquals(sessionCountBefore + maxSessions, userSessionRepository.count());
+    }
 
     private void doAndVerifySignUp(final UserCreateOrUpdateDto createDto) throws Exception {
         final String createPostBody = mapper.writeValueAsString(createDto);
@@ -78,7 +121,7 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.email").value(createDto.getEmail()));
     }
 
-    private String doAndVerifyLogin(final UserLoginDto loginDto) throws Exception {
+    private String doAndVerifyLoginSession(final UserLoginDto loginDto) throws Exception {
         final String loginPostBody = mapper.writeValueAsString(loginDto);
 
         final MockHttpServletRequestBuilder loginRequest = post(URL_ROOT_SESSION)
@@ -90,16 +133,15 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.email").value(loginDto.getEmail()))
                 .andReturn();
 
-        // TODO: test return of different ids
         final String sessionToken = loginResponse.getResponse()
                 .getHeader(AuthFilter.HEADER_NAME_SESSION_TOKEN);
-        assertTrue(StringUtils.isNotEmpty(sessionToken));
+        assertTrue(StringUtils.isNotBlank(sessionToken));
         return sessionToken;
     }
 
     private void doAndVerifyGetUser(final String sessionToken, final UserCreateOrUpdateDto createDto) throws
             Exception {
-        final MockHttpServletRequestBuilder meRequest = get(URL_ROOT_USERS + "/me")
+        final MockHttpServletRequestBuilder meRequest = get(URL_ROOT_USER_ME)
                 .header(AuthFilter.HEADER_NAME_SESSION_TOKEN, sessionToken);
         mvc.perform(meRequest)
                 .andDo(print())
@@ -108,11 +150,11 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.email").value(createDto.getEmail()));
     }
 
-    private void doAndVerifyPutUser(final String sessionToken, final UserCreateOrUpdateDto updateDto) throws
+    private void doAndVerifyUpdateUser(final String sessionToken, final UserCreateOrUpdateDto updateDto) throws
             Exception {
         final String updatePutBody = mapper.writeValueAsString(updateDto);
 
-        final MockHttpServletRequestBuilder meUpdateRequest = put(URL_ROOT_USERS + "/me")
+        final MockHttpServletRequestBuilder meUpdateRequest = put(URL_ROOT_USER_ME)
                 .header(AuthFilter.HEADER_NAME_SESSION_TOKEN, sessionToken)
                 .content(updatePutBody)
                 .contentType(CONTENT_TYPE_JSON);
@@ -123,10 +165,18 @@ public class UserLifecycleIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.email").value(updateDto.getEmail()));
     }
 
-    private void doAndVerifyLogout(final String sessionToken) throws Exception {
+    private void doAndVerifyLogoutSession(final String sessionToken) throws Exception {
         final MockHttpServletRequestBuilder logoutRequest = delete(URL_ROOT_SESSION)
                 .header(AuthFilter.HEADER_NAME_SESSION_TOKEN, sessionToken);
         mvc.perform(logoutRequest)
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    private void doAndVerifyDeleteUser(final String sessionToken) throws Exception {
+        final MockHttpServletRequestBuilder deleteRequest = delete(URL_ROOT_USER_ME)
+                .header(AuthFilter.HEADER_NAME_SESSION_TOKEN, sessionToken);
+        mvc.perform(deleteRequest)
                 .andDo(print())
                 .andExpect(status().isOk());
     }

@@ -33,11 +33,8 @@ public class User extends AbstractEntity {
         return password;
     }
 
-    public void setPassword(final String password) {
-        if (StringUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("Password too short");
-        }
-        this.password = password;
+    public void setPassword(final String pwdHash) {
+        this.password = pwdHash;
     }
 
     public String getName() {
