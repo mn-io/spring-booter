@@ -4,7 +4,6 @@ import net.mnio.jOrchestra.InterruptService;
 import net.mnio.springbooter.controller.api.UserCreateOrUpdateDto;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.repositories.UserRepository;
-import net.mnio.springbooter.persistence.repositories.UserSessionRepository;
 import net.mnio.springbooter.util.security.PasswordUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UserSessionRepository userSessionRepository;
 
     @Autowired
     private InterruptService interruptService;
@@ -62,7 +58,7 @@ public class UserService {
         final String encode = PasswordUtil.hashPasswordWithSalt(dto.getPassword());
         user.setPassword(encode);
 
-        interruptService.interrupt();
+        interruptService.interrupt(String.format("Before saving user '%s'", user.getName()));
         return userRepository.save(user);
     }
 

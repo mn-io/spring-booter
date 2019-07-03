@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
-import static net.mnio.springbooter.persistence.repositories.UserRepositoryIntegrationTest.createUser;
+import static net.mnio.springbooter.TestUtil.createUser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -22,7 +22,7 @@ public class UserSessionRepositoryIntegrationTest extends AbstractIntegrationTes
 
     @Test
     public void dontCreateSessionWithEmptyToken() {
-        final User user = createUser("name", "email", "pwd");
+        final User user = createUser("email", "name", "pwd");
         final UserSession userSession = new UserSession();
         userSession.setUser(user);
 
@@ -62,7 +62,7 @@ public class UserSessionRepositoryIntegrationTest extends AbstractIntegrationTes
 
     @Test
     public void dontCreateSessionWithSameToken() {
-        final User user = createUser("name", "email", "pwd");
+        final User user = createUser("email", "name", "pwd");
         final UserSession userSession1 = new UserSession();
         userSession1.setUser(user);
         overwriteToken(userSession1, "hello");
@@ -86,7 +86,7 @@ public class UserSessionRepositoryIntegrationTest extends AbstractIntegrationTes
 
     @Test
     public void dontDeleteUserWhenSessionIsDeleted() {
-        final User user = createUser("name", "email", "pwd");
+        final User user = createUser("email", "name", "pwd");
         final UserSession userSession = new UserSession();
         userSession.setUser(user);
         userSession.generateToken();

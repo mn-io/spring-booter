@@ -1,6 +1,7 @@
 package net.mnio.springbooter.persistence.repositories;
 
 import net.mnio.springbooter.AbstractIntegrationTest;
+import net.mnio.springbooter.TestUtil;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.model.UserSession;
 import org.apache.commons.lang3.StringUtils;
@@ -20,8 +21,8 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void dontCreateSameUserTwice() {
-        final User user1 = createUser("name", "email", "pwd");
-        final User user2 = createUser("name", "email", "pwd");
+        final User user1 = TestUtil.createUser("email", "name", "pwd");
+        final User user2 = TestUtil.createUser("email", "name", "pwd");
 
         final long userCountBefore = userRepository.count();
         userRepository.save(user1);
@@ -42,7 +43,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void noUserWithEmptyEmailAllowed() {
-        final User user = createUser("name", null, "pwd");
+        final User user = TestUtil.createUser(null, "name", "pwd");
 
         final long userCountBefore = userRepository.count();
 
@@ -60,7 +61,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void noUserWithEmptyPasswordAllowed() {
-        final User user = createUser("name", "email", null);
+        final User user = TestUtil.createUser("email", "name", null);
 
         final long userCountBefore = userRepository.count();
 
@@ -78,7 +79,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void onDeleteCascadeSessions() {
-        final User user = createUser("name", "email", "pwd");
+        final User user = TestUtil.createUser("email", "name", "pwd");
         final UserSession userSession = new UserSession();
         userSession.setUser(user);
         userSession.generateToken();
@@ -101,11 +102,4 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         assertEquals(sessionCountBefore, userSessionRepository.count());
     }
 
-    public static User createUser(final String name, final String email, final String pwd) {
-        final User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(pwd);
-        return user;
-    }
 }
