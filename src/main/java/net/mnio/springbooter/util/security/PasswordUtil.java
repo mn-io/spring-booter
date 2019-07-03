@@ -1,5 +1,6 @@
 package net.mnio.springbooter.util.security;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.crypto.hash.DefaultHashService;
@@ -21,8 +22,14 @@ public class PasswordUtil {
         PASSWORD_SERVICE.setHashService(hashService);
     }
 
-    public static boolean checkPassword(final String plainTextPassword, final String savedPassword) {
-        return PASSWORD_SERVICE.passwordsMatch(plainTextPassword, savedPassword);
+    public static boolean checkPassword(final String plainTextPassword, final String hashedPassword) {
+        if (StringUtils.isBlank(hashedPassword)) {
+            return false;
+        }
+        if (plainTextPassword == null) {
+            return false;
+        }
+        return PASSWORD_SERVICE.passwordsMatch(plainTextPassword, hashedPassword);
     }
 
     public static String hashPasswordWithSalt(final String plainTextPassword) {

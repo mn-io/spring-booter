@@ -2,6 +2,7 @@ package net.mnio.springbooter.bootstrap.filter;
 
 import net.mnio.springbooter.AbstractUnitTest;
 import net.mnio.springbooter.bootstrap.session.PermitPublic;
+import net.mnio.springbooter.bootstrap.session.UserSessionContext;
 import net.mnio.springbooter.controller.error.exceptions.UnauthorizedHttpException;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.model.UserSession;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+import static junit.framework.TestCase.assertNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -39,6 +41,7 @@ public class AuthFilterUnitTest extends AbstractUnitTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(REQUEST_PARAM_VALUE));
+        assertNull(UserSessionContext.getSession());
     }
 
     @Test
@@ -47,6 +50,7 @@ public class AuthFilterUnitTest extends AbstractUnitTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.name").value(UnauthorizedHttpException.class.getSimpleName()));
+        assertNull(UserSessionContext.getSession());
     }
 
     @Test
@@ -57,6 +61,7 @@ public class AuthFilterUnitTest extends AbstractUnitTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.name").value(UnauthorizedHttpException.class.getSimpleName()));
+        assertNull(UserSessionContext.getSession());
     }
 
     @Test
@@ -75,6 +80,7 @@ public class AuthFilterUnitTest extends AbstractUnitTest {
                 .andExpect(content().string(REQUEST_PARAM_VALUE));
 
         verify(userSessionRepository, times(1)).findByToken(userSession.getToken());
+        assertNull(UserSessionContext.getSession());
     }
 
     @Test

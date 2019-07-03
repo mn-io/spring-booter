@@ -11,7 +11,7 @@ public final class RandomUtil {
         return RandomStringUtils.randomAlphanumeric(40);
     }
 
-    static byte[] generateSalt() {
+    public static byte[] generateSalt() {
         return RandomStringUtils.randomAlphanumeric(10).getBytes();
     }
 

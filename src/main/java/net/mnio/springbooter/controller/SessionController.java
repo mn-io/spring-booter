@@ -34,12 +34,9 @@ public class SessionController {
     @Autowired
     private UserSessionService userSessionService;
 
-    /**
+    /*
      * User verification is not part of any service as HttpExceptions are thrown
      * which should be managed by controller logic.
-     *
-     * @param dto
-     * @return
      */
     @PermitPublic
     @RequestMapping(method = RequestMethod.POST)

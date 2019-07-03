@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,52 +69,14 @@ public class UserServiceUnitTest extends AbstractUnitTest {
     }
 
     @Test
-    public void updateUserHappyPath() {
-        final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto("email", "name", "password");
-        final User expectedUser = new User();
-        when(userRepository.save(any(User.class))).thenReturn(expectedUser);
-
+    public void checkPasswordCorrect() {
         final User user = new User();
-        user.setEmail("something");
-        user.setName("something");
-        user.setPassword("something");
+        final String plaintextPassword = "password";
+        user.setPassword(PasswordUtil.hashPasswordWithSalt(plaintextPassword));
 
-        final User actualUser = userService.updateUser(user, dto);
-
-        final ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(captor.capture());
-        assertEquals(dto.getEmail(), captor.getValue().getEmail());
-        assertEquals(dto.getName(), captor.getValue().getName());
-        assertTrue(PasswordUtil.checkPassword(dto.getPassword(), captor.getValue().getPassword()));
-
-        assertEquals(actualUser, expectedUser);
-    }
-
-    @Test
-    public void updateUserWithFixedEmail() {
-        final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto(" EMail ", "", "password");
-
-        final User user = new User();
-        user.setEmail("something");
-        user.setName("something");
-        user.setPassword("something");
-
-        userService.updateUser(user, dto);
-
-        final ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(captor.capture());
-        assertEquals(dto.getEmail().toLowerCase().trim(), captor.getValue().getEmail());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void dontUpdateUserWithEmptyEmail() {
-        final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto("", "", "password");
-        userService.updateUser(new User(), dto);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void dontUpdateUserWithEmptyPassword() {
-        final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto("email", "", "");
-        userService.updateUser(new User(), dto);
+        assertTrue(userService.checkPassword(user, plaintextPassword));
+        assertFalse(userService.checkPassword(user, "not correct"));
+        assertFalse(userService.checkPassword(user, ""));
+        assertFalse(userService.checkPassword(user, null));
     }
 }

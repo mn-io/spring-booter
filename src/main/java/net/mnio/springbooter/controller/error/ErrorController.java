@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static net.mnio.springbooter.controller.error.ErrorHandlerComponent.LogLevel;
 
-/**
+/*
  * see: https://stackoverflow.com/questions/35957040/how-to-show-custom-404-page-when-user-enters-invalid-url-in-spring-boot-applicat
  */
 @RestController

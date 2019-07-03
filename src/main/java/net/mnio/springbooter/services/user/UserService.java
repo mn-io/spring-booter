@@ -37,6 +37,10 @@ public class UserService {
         return userRepository.findByEmail(email.toLowerCase());
     }
 
+    /*
+     * As soon there is distinguished logic between update and create more tests are needed.
+     * That's the reason why tracking test coverage is important.
+     */
     public User createUser(final UserCreateOrUpdateDto dto) {
         final User user = new User();
         return updateUser(user, dto);
