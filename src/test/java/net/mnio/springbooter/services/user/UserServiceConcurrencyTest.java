@@ -28,6 +28,7 @@ public class UserServiceConcurrencyTest extends AbstractConcurrencyTest {
     public void creatingSameUserConcurrent() throws Exception {
         final String email = "email";
 
+        assertTrue(userRepository.findByEmail(email).isEmpty());
         final long userCountBefore = userRepository.count();
 
         final Task task1ToBeInterrupted = () -> {
@@ -58,7 +59,7 @@ public class UserServiceConcurrencyTest extends AbstractConcurrencyTest {
                 );
 
         assertTrue(success);
-        assertNotNull(userRepository.findByEmail(email));
+        assertTrue(userRepository.findByEmail(email).isPresent());
         assertEquals(userCountBefore + 1, userRepository.count());
     }
 }

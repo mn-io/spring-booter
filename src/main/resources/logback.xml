@@ -26,6 +26,11 @@
     <!--if spring security is used again indicate which filters were added -->
     <logger name="org.springframework.security.web.FilterChainProxy" level="DEBUG"/>
 
+    <logger name="springfox.documentation.schema" level="INFO"/>
+    <logger name="springfox.documentation.spring.web.readers" level="INFO"/>
+    <logger name="springfox.documentation.swagger.readers.operation" level="INFO"/>
+    <logger name="springfox.documentation.spring.web.scanner" level="INFO"/>
+
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ROLLING"/>
