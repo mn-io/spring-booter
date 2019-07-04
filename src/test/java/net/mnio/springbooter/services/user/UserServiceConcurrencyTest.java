@@ -33,7 +33,7 @@ public class UserServiceConcurrencyTest extends AbstractConcurrencyTest {
         final Task task1ToBeInterrupted = () -> {
             try {
                 final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto(email, "user1", "password");
-                userService.createUser(dto);
+                userService.createUser(dto); // here interruptService kicks in
                 fail("Exception expected");
             } catch (Exception e) {
                 final Throwable cause = e.getCause().getCause();
@@ -47,13 +47,15 @@ public class UserServiceConcurrencyTest extends AbstractConcurrencyTest {
             final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto(email, "user2", "password");
             final User user = userService.createUser(dto);
             assertNotNull(user.getId());
+            assertEquals(user.getEmail(), dto.getEmail());
         };
 
-        final boolean success = ((OrchestratedInterruptServiceImpl) interruptService).start(
-                task1ToBeInterrupted,
-                task2CreatingUserSuccessfully,
-                task2CreatingUserSuccessfully
-        );
+        final boolean success = ((OrchestratedInterruptServiceImpl) interruptService)
+                .start(
+                        task1ToBeInterrupted,
+                        task2CreatingUserSuccessfully,
+                        task2CreatingUserSuccessfully
+                );
 
         assertTrue(success);
         assertNotNull(userRepository.findByEmail(email));
