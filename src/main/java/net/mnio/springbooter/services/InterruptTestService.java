@@ -1,6 +1,6 @@
 package net.mnio.springbooter.services;
 
-import net.mnio.jOrchestra.InterruptService;
+import net.mnio.jConcurrencyOrchestra.InterruptService;
 import org.springframework.stereotype.Service;
 
 @Service

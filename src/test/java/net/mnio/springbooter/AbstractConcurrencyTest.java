@@ -1,7 +1,7 @@
 package net.mnio.springbooter;
 
-import net.mnio.jOrchestra.InterruptService;
-import net.mnio.jOrchestra.test.OrchestratedInterruptServiceImpl;
+import net.mnio.jConcurrencyOrchestra.InterruptService;
+import net.mnio.jConcurrencyOrchestra.test.OrchestratedInterruptServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -9,10 +9,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration
-@ActiveProfiles({"test", "orchestrationTest"})
-public abstract class AbstractOrchestrationTest extends AbstractIntegrationTest {
+@ActiveProfiles({"test", "concurrencyTest"})
+public abstract class AbstractConcurrencyTest extends AbstractIntegrationTest {
 
-    @Profile("orchestrationTest")
+    @Profile("concurrencyTest")
     @Configuration
     static class Config {
 
@@ -21,5 +21,4 @@ public abstract class AbstractOrchestrationTest extends AbstractIntegrationTest 
             return new OrchestratedInterruptServiceImpl();
         }
     }
-
 }

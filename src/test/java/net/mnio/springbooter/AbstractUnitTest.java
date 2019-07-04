@@ -1,7 +1,7 @@
 package net.mnio.springbooter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.mnio.jOrchestra.InterruptService;
+import net.mnio.jConcurrencyOrchestra.InterruptService;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.model.UserSession;
 import net.mnio.springbooter.persistence.repositories.UserRepository;

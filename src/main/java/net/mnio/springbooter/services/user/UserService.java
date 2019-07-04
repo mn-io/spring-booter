@@ -1,6 +1,6 @@
 package net.mnio.springbooter.services.user;
 
-import net.mnio.jOrchestra.InterruptService;
+import net.mnio.jConcurrencyOrchestra.InterruptService;
 import net.mnio.springbooter.controller.api.UserCreateOrUpdateDto;
 import net.mnio.springbooter.persistence.model.User;
 import net.mnio.springbooter.persistence.repositories.UserRepository;

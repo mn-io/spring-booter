@@ -163,11 +163,11 @@
             <version>${liquibase.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://jitpack.io/#mn-io/jOrchestra/ -->
+        <!-- https://jitpack.io/#mn-io/jConcurrencyOrchestra/ -->
         <dependency>
             <groupId>com.github.mn-io</groupId>
             <artifactId>jConcurrencyOrchestra</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
