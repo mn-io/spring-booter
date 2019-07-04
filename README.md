@@ -3,12 +3,15 @@
 [![CircleCI](https://circleci.com/gh/mn-io/spring-booter.svg?style=svg)](https://circleci.com/gh/mn-io/spring-booter)
 
 
+Spring Boot setup with demo user account handling.
+Supports DB versioning, unit-, e2e and concurrency tests. 
+
 ## Get started
 
 __NB__: Inside `makefile` we define most relevant commands. 
 
 
-#### Setup
+### Setup
 
 This project relies on MariaDB. A simple instance can be started using vagrant and this setup at https://github.com/steveswinsburg/mariadb-vagrant.
 
@@ -44,13 +47,14 @@ IntelliJ works well with Spring and Spring Actuator.
  - Configuration is way to complex: https://docs.spring.io/spring-security/site/docs/current/reference/html/jc.html
  - CSRF is simple to implement if authentication is used
  - Spring violates the simple REST API paradigm.
- ... but do not do crypto yourself:
+ 
+ ... but do not do crypto yourself!
 - of course not: this project is using Apache Shiro
 
 
 ## Testing
 
-As a demo project we are going to demonstrate how different tests be be written. 
+As a demo project we are going to demonstrate how different tests can be written. 
 
 
 In general test coverage is quite high as seen below. (Sorry, but I was too lazy to setup SureFire with SonarCube, etc. )
@@ -78,7 +82,7 @@ Tests can be seen in different ways, ignoring UI as we have a (micro)service ori
   
    
 Practical speaking it can be hard to place tests in the correct box. In this project we are covering some of the test case several times.
-As test writing should be fast ond convenient (Clean Code, TDD), this should not be a pain. 
+As test writing should be fast and convenient (TDD, Clean Code!), this should not be a pain. 
 
 
 When tests start to fail it can be easily tracked down what went wrong by analysing what started to fail first. 
@@ -108,8 +112,8 @@ __Use case__: Insert different users but with same email address.
 What happens is explained along the test output:
 
 #### Setup 
-Two tasks are created and put up in a certain [running order](https://github.com/mn-io/spring-booter/blob/master/src/test/java/net/mnio/springbooter/services/user/UserServiceConcurrencyTest.java#L54)
-`Thread-4-Task-9` (`task1ToBeInterrupted`) si desinged to be interrupted and checks whether an exception occurs because the user email is not unique anymore even if it has started first.
+Two tasks are created and put up in a certain [running order](https://github.com/mn-io/spring-booter/blob/master/src/test/java/net/mnio/springbooter/services/user/UserServiceConcurrencyTest.java#L56)
+`Thread-4-Task-9` (`task1ToBeInterrupted`) is designed to be interrupted and checks whether an exception occurs because the user email is not unique anymore even if it has started first.
 `Thread-5-Task-6` (`task2CreatingUserSuccessfully`) shall continue and insert the user. As `interrupt()` is called at the same place it has to continue by adding the task again in the running order. 
 
 `[main]            INFO : net.mnio.jConcurrencyOrchestra.test.TaskSchedule - Running order: Thread-4-Task-9, Thread-5-Task-6, Thread-5-Task-6`
@@ -117,12 +121,12 @@ Two tasks are created and put up in a certain [running order](https://github.com
 
 #### Run test scenario
 
-`task1ToBeInterrupted` starts and interrupts
+`task1ToBeInterrupted` starts and interrupts.
 
 `[Thread-4-Task-9] INFO : net.mnio.jConcurrencyOrchestra.test.OrchestratedInterruptServiceImpl - 1. time for thread - Interruption 'Before saving user 'user1'' called`
 
 
-Same for `task2CreatingUserSuccessfully`, but this is also third in running order and can continue
+Same for `task2CreatingUserSuccessfully`, but this is also third in running order and can continue.
 
 `[Thread-5-Task-6] INFO : net.mnio.jConcurrencyOrchestra.test.OrchestratedInterruptServiceImpl - 1. time for thread - Interruption 'Before saving user 'user2'' called`
 
@@ -136,7 +140,7 @@ Now `task1ToBeInterrupted` can continue as running order has completed and it wi
 
 #### Verify
 
-__Boom__: DB constraint triggers exception and we can now verify the app behavior, its state and exception cleanup
+__Boom__: DB constraint triggers exception and we can now verify the app behavior, its state and exception cleanup.
 
 `[Thread-4-Task-9] WARN : org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1062, SQLState: 23000`
 

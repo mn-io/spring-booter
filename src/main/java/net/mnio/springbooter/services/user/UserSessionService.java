@@ -10,7 +10,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
-import javax.transaction.Transactional;
 
 @Service
 public class UserSessionService {
@@ -21,7 +20,6 @@ public class UserSessionService {
     @Autowired
     private UserSessionRepository userSessionRepository;
 
-    @Transactional
     public UserSession createSession(final User user) {
         final UserSession session = new UserSession();
         session.setUser(user);
@@ -32,6 +30,7 @@ public class UserSessionService {
         return saved;
     }
 
+    //TODO: auto logout - tests whether retry works on updating at the same time
     @Retryable(OptimisticLockException.class)
     public void destroySession(final UserSession session) {
         final String email = session.getUser().getEmail();

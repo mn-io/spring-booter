@@ -33,6 +33,7 @@ public class UserServiceConcurrencyTest extends AbstractConcurrencyTest {
 
         final Task task1ToBeInterrupted = () -> {
             try {
+                assertTrue(userRepository.findByEmail(email).isEmpty());
                 final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto(email, "user1", "password");
                 userService.createUser(dto); // here interruptService kicks in
                 fail("Exception expected");
@@ -41,14 +42,17 @@ public class UserServiceConcurrencyTest extends AbstractConcurrencyTest {
                 assertEquals(java.sql.SQLIntegrityConstraintViolationException.class, cause.getClass());
                 final String actualMessage = StringUtils.substringAfter(cause.getMessage(), " ");
                 assertEquals("Duplicate entry 'email' for key 'UC_USER_EMAIL_COL'", actualMessage);
+                assertTrue(userRepository.findByEmail(email).isPresent());
             }
         };
 
         final Task task2CreatingUserSuccessfully = () -> {
+            assertTrue(userRepository.findByEmail(email).isEmpty());
             final UserCreateOrUpdateDto dto = new UserCreateOrUpdateDto(email, "user2", "password");
             final User user = userService.createUser(dto);
             assertNotNull(user.getId());
             assertEquals(user.getEmail(), dto.getEmail());
+            assertTrue(userRepository.findByEmail(email).isPresent());
         };
 
         final boolean success = ((OrchestratedInterruptServiceImpl) interruptService)

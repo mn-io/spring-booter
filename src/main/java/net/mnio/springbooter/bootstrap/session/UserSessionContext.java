@@ -20,7 +20,7 @@ public final class UserSessionContext {
         final Optional<UserSession> restoredSession = sessionRepository.findByToken(authToken);
         if (restoredSession.isPresent()) {
             final UserSession tmp = restoredSession.get();
-            //            userSessionService.updateSessionTimestampAsync(sessionId);
+            //TODO: auto logout - update timestamp
             instance.set(tmp);
             return restoredSession;
         } else {
