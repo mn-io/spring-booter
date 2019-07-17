@@ -27,7 +27,7 @@ public class UserControllerConcurrencyTest extends AbstractConcurrencyTest {
 
     @Test
     public void updateUserTwice() throws Exception {
-        final UserCreateOrUpdateDto createDto = new UserCreateOrUpdateDto("test1@test.com", "crated", "password");
+        final UserCreateOrUpdateDto createDto = new UserCreateOrUpdateDto("test1@test.com", "created", "password");
         final UserLoginDto loginDto = new UserLoginDto(createDto.getEmail(), createDto.getPassword());
         final UserCreateOrUpdateDto updateDto1 = new UserCreateOrUpdateDto(createDto.getEmail(), "update1", createDto.getPassword());
         final UserCreateOrUpdateDto updateDto2 = new UserCreateOrUpdateDto(createDto.getEmail(), "update2", createDto.getPassword());
