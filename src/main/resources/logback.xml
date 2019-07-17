@@ -30,6 +30,8 @@
     <logger name="springfox.documentation.spring.web.readers" level="INFO"/>
     <logger name="springfox.documentation.swagger.readers.operation" level="INFO"/>
     <logger name="springfox.documentation.spring.web.scanner" level="INFO"/>
+    <logger name="liquibase.servicelocator.CustomResolverServiceLocator" level="INFO"/>
+    <logger name="liquibase.diff.output.changelog.DiffToChangeLog" level="INFO"/>
 
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
