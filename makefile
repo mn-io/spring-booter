@@ -11,14 +11,17 @@ db-create-diff:
 
 # Applies master.sql to database
 db-update:
-	mvn liquibase:update
+	mvn liquibase:update -Dliquibase.propertyFile=src/main/resources/application-default.yml
 
 mvn-tree:
 	mvn dependency:tree -Dverbose
 
-mvn-run:
+mvn-run-env-dev-default:
 	mvn spring-boot:run
 
+mvn-run-env-staging:
+	# loads src/main/resources/application-staging.yml
+	mvn spring-boot:run -Dspring.profiles.active=staging
 
 # NB: install curl and jq
 
